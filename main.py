@@ -129,13 +129,8 @@ def main_func():
   async def on_message(message):
     if message.author == client.user:
       return
-
-    if message.content.startswith('$hello'):
-      embedVar = discord.Embed(title="Hello!", description="Desc", color=main_color)
-      embedVar.add_field(name="Field1", value="hi", inline=False)
-      await message.channel.send(embed=embedVar)
     
-    if message.content.startswith('$apexrot'):
+    if message.content.startswith('!apexrot'):
       embed = await get_map_rotation_embed()
       view = MapRotationEmebedView()
       await message.channel.send(embed=embed, view=view)
