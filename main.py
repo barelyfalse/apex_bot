@@ -33,16 +33,12 @@ def main_func():
   def format_time(time_str):
     time = datetime.datetime.strptime(time_str, '%H:%M:%S')
     if time.hour > 0:
-      return f'{time.hour}h {time.minute}m'
-    elif time.minute == 0:
-      if time.hour > 1:
-        return f'{time.hour} horas'
-      elif time.hour == 0:
-        return 'Ninguno, 0 :v'
+      if time.minute > 0:
+        return f'{time.hour}h {time.minute} m'
       else:
-        return f'1 hora'
+        return f'{time.hour} horas' if time.hour > 1 else f'1 hora'
     else:
-      return f'{time.minute} minutos'
+      return f'{time.minute} minutos' if time.minute > 1 else f'1 minuto'
 
   def format_minutes(mins):
     hours = mins // 60
