@@ -8,7 +8,7 @@ import datetime
 def main_func():
   intents = discord.Intents.default()
   intents.message_content = True
-  client = discord.Client(intents=intents)
+  client = discord.Bot()
   
   global num
   num = 0
@@ -83,7 +83,9 @@ def main_func():
     return embed
 
   class MapRotationEmebedView(discord.ui.View):
-    @discord.ui.button(label="Actualizar", style=discord.ButtonStyle.primary, emoji="🔄")
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.button(label="Actualizar", custom_id="rot_update", style=discord.ButtonStyle.primary, emoji="🔄")
     async def update_embed_button(self, button, interaction):
       new_embed = await get_map_rotation_embed()
       await interaction.response.edit_message(embed=new_embed, view=self)
@@ -91,6 +93,7 @@ def main_func():
   @client.event
   async def on_ready():
     print(f'We have logged in as {client.user}')
+    client.add_view(MapRotationEmebedView())
     update_activity.start()
 
   @tasks.loop(minutes=1)
@@ -129,12 +132,19 @@ def main_func():
   async def on_message(message):
     if message.author == client.user:
       return
-    
-    if message.content.startswith('!apexrot'):
-      embed = await get_map_rotation_embed()
-      view = MapRotationEmebedView()
-      await message.channel.send(embed=embed, view=view)
       
+  @client.command(description="Show map rotation info")
+  async def apexrot(ctx):
+    embed = await get_map_rotation_embed()
+    view = MapRotationEmebedView()
+    await ctx.respond(embed=embed, view=view)
+  
+  @client.command(description="Shows cat")
+  async def apexcat(ctx):
+    data = get_map_rotation_info()
+    mapInfo = f"{data['next']['map']} in {data['current']['remainingMins']} minutes"
+    await ctx.respond(f"https://cataas.com/cat/says/{mapInfo.replace(' ', '%20')}")
+  
   client.run(os.getenv('DC_API_KEY'))
 
 if __name__ == '__main__':
